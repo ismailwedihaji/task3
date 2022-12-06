@@ -7,13 +7,13 @@ GROUP BY EXTRACT(month FROM time);
 
 
 --The specific number of individual lessons, group lessons and ensembles
-CREATE MATERIALIZED VIEW "number_of_lesson_type" 
+CREATE VIEW "number_of_lesson_type" 
 AS  SELECT lesson_type ,COUNT(*) AS "total_amount_per_month",
 EXTRACT(month FROM time) as month from lesson	
  WHERE EXTRACT(year FROM time) = '2022' GROUP BY month, lesson_type;
  
 -- tO Show how many students there are with no sibling, with one sibling, with two siblings
- CREATE VIEW "student_and_sibling" AS
+ CREATE MATERIALIZED VIEW "student_and_sibling" AS
  SELECT * FROM student    
 FULL JOIN sibling ON sibling.student_id = student.id;
 
