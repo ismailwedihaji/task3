@@ -20,7 +20,7 @@ FULL JOIN sibling ON sibling.student_id = student.id;
 SELECT COUNT(*) AS students, sum AS siblings
 FROM (SELECT SUM(CASE WHEN id = siblings THEN 1  ELSE 0 END) 
 FROM (SELECT id, student_id AS siblings FROM "student_and_sibling")
-  AS num GROUP BY siblings) AS sibling
+  AS num GROUP BY siblings) AS sibling GROUP BY siblings ORDER BY students;
 
 
 -- List all instructors who has given more than a specific number of lessons during the current month
