@@ -13,7 +13,7 @@ EXTRACT(month FROM time) as month from lesson
  WHERE EXTRACT(year FROM time) = '2022' GROUP BY month, lesson_type;
  
 -- tO Show how many students there are with no sibling, with one sibling, with two siblings
- CREATE MATERIALIZED VIEW "student_and_sibling" AS
+ CREATE VIEW "student_and_sibling" AS
  SELECT * FROM student    
 FULL JOIN sibling ON sibling.student_id = student.id;
 
@@ -32,7 +32,7 @@ SELECT EXTRACT(MONTH FROM time) as month, instructor_id, count(*) AS lesson_teac
 
 
 --List all ensembles held during the next week, sorted by music genre and weekday. 
-CREATE VIEW "list_of_ensembles" AS
+CREATE MATERIALIZED VIEW "list_of_ensembles" AS
 SELECT lesson_type, EXTRACT(week FROM time) AS weekday, lesson.genre AS genre,  lesson.time,
     CASE
         WHEN lesson.max_student = 35 THEN 'full'
