@@ -7,10 +7,16 @@ GROUP BY EXTRACT(month FROM time);
 
 
 --The specific number of individual lessons, group lessons and ensembles
-CREATE VIEW "number_of_lesson_type" 
-AS  SELECT lesson_type ,COUNT(*) AS "total_amount_per_month",
-EXTRACT(month FROM time) as month from lesson	
- WHERE EXTRACT(year FROM time) = '2022' GROUP BY month, lesson_type;
+ 
+ CREATE VIEW "number_of_lessons_types" AS SELECT
+ EXTRACT(MONTH FROM time) AS month,
+ SUM(CASE WHEN lesson_type='indivisual' THEN 1 ELSE 0 END) AS individual,
+ SUM(CASE WHEN lesson_type='group' THEN 1 ELSE 0 END) AS group,
+ SUM(CASE WHEN lesson_type='ensembles' THEN 1 ELSE 0 END) AS ensemble,
+ COUNT(*) AS total
+FROM lesson WHERE EXTRACT(YEAR FROM time) = '2022'
+GROUP BY month
+ORDER BY month;
  
 -- tO Show how many students there are with no sibling, with one sibling, with two siblings
  CREATE VIEW "student_and_sibling" AS
@@ -24,12 +30,18 @@ FROM (SELECT id, student_id AS siblings FROM "student_and_sibling")
 
 
 -- List all instructors who has given more than a specific number of lessons during the current month
+
 CREATE VIEW "instructor_and_lesson" AS
- SELECT * FROM lesson    
+SELECT * FROM lesson
 FULL JOIN lesson_teaches ON lesson_teaches.lesson_id = lesson.id;
 
-SELECT EXTRACT(MONTH FROM time) as month, instructor_id, count(*) AS lesson_teaches FROM "instructor_and_lesson" WHERE EXTRACT(YEAR FROM time) = 2022 GROUP BY instructor_id, month HAVING COUNT(*) > 0 ORDER BY instructor_id;
-
+SELECT instructor_id, COUNT(*) AS num_lessons
+FROM "instructor_and_lesson"
+WHERE time >= date_trunc('month', CURRENT_DATE) AND
+time < date_trunc('month', CURRENT_DATE + INTERVAL '1 month')
+GROUP BY instructor_id
+HAVING COUNT(*) > 0
+ORDER BY num_lessons ASC;
 
 --List all ensembles held during the next week, sorted by music genre and weekday. 
 CREATE MATERIALIZED VIEW "list_of_ensembles" AS
